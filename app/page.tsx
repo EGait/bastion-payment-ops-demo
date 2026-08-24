@@ -1,7 +1,10 @@
-import { KPIStrip } from "@/components/KPIStrip";
-import { ReconTable } from "@/components/ReconTable";
-import { ExceptionsQueue } from "@/components/ExceptionsQueue";
-import { kpiSnapshot, reconRows, exceptions } from "@/data/mockLedger";
+import { Dashboard } from "@/components/Dashboard";
+import {
+  kpiSnapshot,
+  reconRows,
+  exceptions,
+  treasuryBalances,
+} from "@/data/mockLedger";
 
 export default function DashboardPage() {
   return (
@@ -22,9 +25,12 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      <KPIStrip kpi={kpiSnapshot} />
-      <ReconTable rows={reconRows} />
-      <ExceptionsQueue initial={exceptions} />
+      <Dashboard
+        kpi={kpiSnapshot}
+        initialRecon={reconRows}
+        initialExceptions={exceptions}
+        treasuryBalances={treasuryBalances}
+      />
 
       <footer className="mt-2 border-t border-border-primary pt-4 text-xs text-text-tertiary">
         Portfolio demo built for the Bastion Payment Operations Associate

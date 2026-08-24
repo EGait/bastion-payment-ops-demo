@@ -27,6 +27,7 @@ export interface ReconRow {
   partnerAmount: number;
   status: ReconStatus;
   breakReason?: string;
+  linkedExceptionId?: string; // set once a break has been promoted to a tracked exception
 }
 
 export type ExceptionType =
@@ -61,6 +62,18 @@ export interface ExceptionItem {
   ageMinutes: number;
   summary: string;
   trail: TrailHop[];
+  linkedReconId?: string; // set when this exception originated from a recon break
+}
+
+export type TreasuryStatus = "Adequate" | "Low" | "Rebalancing";
+
+export interface TreasuryBalance {
+  currency: "USD" | "USDC" | "EUR";
+  venue: string;
+  balance: number;
+  target: number;
+  status: TreasuryStatus;
+  lastRebalanced: string;
 }
 
 export interface KpiSnapshot {
@@ -191,6 +204,7 @@ export const reconRows: ReconRow[] = [
     partnerAmount: 0,
     status: "break",
     breakReason: "On internal ledger, not yet visible on Circle mint API",
+    linkedExceptionId: "EXC-4471",
   },
   {
     id: "RCN-10241",
@@ -246,6 +260,7 @@ export const exceptions: ExceptionItem[] = [
     status: "Investigating",
     ageMinutes: 47,
     summary: "Mint confirmed on-chain but not reflected on partner ledger.",
+    linkedReconId: "RCN-10240",
     trail: [
       {
         label: "Bastion ledger",
@@ -507,5 +522,32 @@ export const exceptions: ExceptionItem[] = [
         time: "—",
       },
     ],
+  },
+];
+
+export const treasuryBalances: TreasuryBalance[] = [
+  {
+    currency: "USD",
+    venue: "Cross River operating account",
+    balance: 2_415_000,
+    target: 2_000_000,
+    status: "Adequate",
+    lastRebalanced: "Today, 06:00",
+  },
+  {
+    currency: "USDC",
+    venue: "Circle mint reserve",
+    balance: 812_000,
+    target: 1_000_000,
+    status: "Low",
+    lastRebalanced: "Yesterday, 18:30",
+  },
+  {
+    currency: "EUR",
+    venue: "Correspondent Bank operating account",
+    balance: 406_500,
+    target: 400_000,
+    status: "Adequate",
+    lastRebalanced: "Today, 06:00",
   },
 ];

@@ -1,13 +1,11 @@
 "use client";
 
 import { Fragment, useMemo, useState } from "react";
-import {
-  ExceptionItem,
-  ExceptionStatus,
-} from "@/data/mockLedger";
+import { ExceptionItem, ExceptionStatus } from "@/data/mockLedger";
 import { Badge, exceptionStatusTone } from "@/components/Badge";
 import { ExceptionDetail } from "@/components/ExceptionDetail";
 import { formatUsd, formatAge } from "@/lib/format";
+import { isSlaBreached } from "@/lib/sla";
 
 const FILTERS: Array<ExceptionStatus | "All"> = [
   "All",
@@ -17,21 +15,23 @@ const FILTERS: Array<ExceptionStatus | "All"> = [
   "Resolved",
 ];
 
-export function ExceptionsQueue({ initial }: { initial: ExceptionItem[] }) {
-  const [items, setItems] = useState(initial);
-  const [expandedId, setExpandedId] = useState<string | null>(initial[0]?.id ?? null);
+export function ExceptionsQueue({
+  items,
+  onStatusChange,
+  expandedId,
+  onExpandChange,
+}: {
+  items: ExceptionItem[];
+  onStatusChange: (id: string, status: ExceptionStatus) => void;
+  expandedId: string | null;
+  onExpandChange: (id: string | null) => void;
+}) {
   const [filter, setFilter] = useState<ExceptionStatus | "All">("All");
 
   const visible = useMemo(
     () => (filter === "All" ? items : items.filter((e) => e.status === filter)),
     [items, filter]
   );
-
-  function handleStatusChange(id: string, status: ExceptionStatus) {
-    setItems((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, status } : e))
-    );
-  }
 
   return (
     <section className="rounded-lg border border-border-primary bg-surface-primary">
@@ -84,11 +84,13 @@ export function ExceptionsQueue({ initial }: { initial: ExceptionItem[] }) {
           <tbody>
             {visible.map((exc) => {
               const isOpen = expandedId === exc.id;
+              const breached = isSlaBreached(exc);
               return (
                 <Fragment key={exc.id}>
                   <tr
-                    onClick={() => setExpandedId(isOpen ? null : exc.id)}
-                    className={`cursor-pointer border-b border-border-primary last:border-0 hover:bg-surface-hover ${
+                    id={`exception-${exc.id}`}
+                    onClick={() => onExpandChange(isOpen ? null : exc.id)}
+                    className={`cursor-pointer scroll-mt-4 border-b border-border-primary last:border-0 hover:bg-surface-hover ${
                       isOpen ? "bg-surface-hover" : ""
                     }`}
                   >
@@ -123,8 +125,22 @@ export function ExceptionsQueue({ initial }: { initial: ExceptionItem[] }) {
                         {exc.status}
                       </Badge>
                     </td>
-                    <td className="px-4 py-2.5 text-right tabular text-text-secondary">
-                      {formatAge(exc.ageMinutes)}
+                    <td className="px-4 py-2.5 text-right tabular">
+                      <span
+                        title={breached ? "Past SOP escalation target" : undefined}
+                        className={
+                          breached
+                            ? "inline-flex items-center gap-1 font-semibold text-danger-text"
+                            : "text-text-secondary"
+                        }
+                      >
+                        {breached && (
+                          <svg viewBox="0 0 16 16" className="h-3 w-3" fill="currentColor">
+                            <path d="M8 1.5 15 14H1L8 1.5zm0 4.5v4M8 11.5h.01" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                        {formatAge(exc.ageMinutes)}
+                      </span>
                     </td>
                   </tr>
                   {isOpen && (
@@ -132,7 +148,7 @@ export function ExceptionsQueue({ initial }: { initial: ExceptionItem[] }) {
                       <td colSpan={7} className="p-0">
                         <ExceptionDetail
                           exception={exc}
-                          onStatusChange={handleStatusChange}
+                          onStatusChange={onStatusChange}
                         />
                       </td>
                     </tr>

@@ -5,7 +5,15 @@ import { ReconRow } from "@/data/mockLedger";
 import { Badge, reconStatusTone } from "@/components/Badge";
 import { formatUsd } from "@/lib/format";
 
-export function ReconTable({ rows }: { rows: ReconRow[] }) {
+export function ReconTable({
+  rows,
+  onPromote,
+  onViewException,
+}: {
+  rows: ReconRow[];
+  onPromote: (reconId: string) => void;
+  onViewException: (exceptionId: string) => void;
+}) {
   const [breaksOnly, setBreaksOnly] = useState(false);
 
   const visibleRows = useMemo(
@@ -42,12 +50,13 @@ export function ReconTable({ rows }: { rows: ReconRow[] }) {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] text-sm">
+        <table className="w-full min-w-[820px] text-sm">
           <thead>
             <tr className="border-b border-border-primary text-left text-xs font-medium uppercase tracking-wide text-text-tertiary">
               <th className="px-4 py-2 font-medium">ID</th>
               <th className="px-4 py-2 font-medium">Rail</th>
               <th className="px-4 py-2 font-medium">Counterparty</th>
+              <th className="px-4 py-2 font-medium">Currency</th>
               <th className="px-4 py-2 font-medium text-right">
                 Internal ledger
               </th>
@@ -55,6 +64,7 @@ export function ReconTable({ rows }: { rows: ReconRow[] }) {
                 Partner ledger
               </th>
               <th className="px-4 py-2 font-medium">Status</th>
+              <th className="px-4 py-2 font-medium">Exception</th>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +80,11 @@ export function ReconTable({ rows }: { rows: ReconRow[] }) {
                 <td className="px-4 py-2.5 text-text-primary">
                   {row.counterparty}
                 </td>
+                <td className="px-4 py-2.5">
+                  <span className="rounded border border-border-secondary bg-surface-secondary px-1.5 py-0.5 text-[11px] font-medium text-text-secondary">
+                    {row.currency}
+                  </span>
+                </td>
                 <td className="px-4 py-2.5 text-right tabular text-text-primary">
                   {formatUsd(row.internalAmount, row.currency)}
                 </td>
@@ -84,12 +99,33 @@ export function ReconTable({ rows }: { rows: ReconRow[] }) {
                     {row.status === "matched" ? "Matched" : "Break"}
                   </Badge>
                 </td>
+                <td className="px-4 py-2.5">
+                  {row.status !== "break" ? (
+                    <span className="text-xs text-text-tertiary">—</span>
+                  ) : row.linkedExceptionId ? (
+                    <button
+                      type="button"
+                      onClick={() => onViewException(row.linkedExceptionId!)}
+                      className="rounded-md border border-info-border bg-info-bg px-2 py-1 text-xs font-medium text-info-text hover:brightness-95"
+                    >
+                      View {row.linkedExceptionId} →
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => onPromote(row.id)}
+                      className="rounded-md border border-border-secondary bg-surface-primary px-2 py-1 text-xs font-medium text-text-secondary hover:bg-surface-hover"
+                    >
+                      Promote to exception
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
             {visibleRows.length === 0 && (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={8}
                   className="px-4 py-8 text-center text-sm text-text-tertiary"
                 >
                   No breaks — everything reconciled.
