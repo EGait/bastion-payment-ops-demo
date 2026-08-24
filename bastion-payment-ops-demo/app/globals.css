@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------- */
+/* Design tokens                                                          */
+/* A restrained, light "fintech ops" palette — surfaces/text/border/badge */
+/* role tokens, in the spirit of Stripe/Brex/Ramp internal tooling.       */
+/* Deliberately NOT SolanaFeed's dark/gold crypto theme.                  */
+/* ---------------------------------------------------------------------- */
+:root {
+  /* Surfaces */
+  --surface-canvas: #f6f7f9;
+  --surface-primary: #ffffff;
+  --surface-secondary: #f1f3f6;
+  --surface-hover: #eef1f5;
+  --surface-inverse: #0f172a;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #47556a;
+  --text-tertiary: #8a96a8;
+  --text-inverse: #ffffff;
+  --text-link: #1d4ed8;
+
+  /* Borders */
+  --border-primary: #e3e7ee;
+  --border-secondary: #cdd4e0;
+  --border-focus: #1d4ed8;
+
+  /* Brand */
+  --brand-primary: #14204a;
+  --brand-primary-hover: #1c2c60;
+  --brand-accent: #1d4ed8;
+  --brand-accent-hover: #1e40af;
+
+  /* Role tokens — status badges, hop indicators, alerts */
+  --bg-success: #ecfdf3;
+  --text-success: #05713b;
+  --border-success: #b7ecd0;
+
+  --bg-danger: #fef2f2;
+  --text-danger: #b91c1c;
+  --border-danger: #fbd0d0;
+
+  --bg-warning: #fff8eb;
+  --text-warning: #a15c07;
+  --border-warning: #fbe4ad;
+
+  --bg-info: #eff5ff;
+  --text-info: #1d4ed8;
+  --border-info: #c9dbfb;
+
+  --bg-neutral: #f1f3f6;
+  --text-neutral: #47556a;
+  --border-neutral: #dde2ea;
+
+}
+
+@theme inline {
+  --color-surface-canvas: var(--surface-canvas);
+  --color-surface-primary: var(--surface-primary);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-inverse: var(--surface-inverse);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-link: var(--text-link);
+
+  --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
+  --color-border-focus: var(--border-focus);
+
+  --color-brand: var(--brand-primary);
+  --color-brand-hover: var(--brand-primary-hover);
+  --color-accent: var(--brand-accent);
+  --color-accent-hover: var(--brand-accent-hover);
+
+  --color-success-bg: var(--bg-success);
+  --color-success-text: var(--text-success);
+  --color-success-border: var(--border-success);
+
+  --color-danger-bg: var(--bg-danger);
+  --color-danger-text: var(--text-danger);
+  --color-danger-border: var(--border-danger);
+
+  --color-warning-bg: var(--bg-warning);
+  --color-warning-text: var(--text-warning);
+  --color-warning-border: var(--border-warning);
+
+  --color-info-bg: var(--bg-info);
+  --color-info-text: var(--text-info);
+  --color-info-border: var(--border-info);
+
+  --color-neutral-bg: var(--bg-neutral);
+  --color-neutral-text: var(--text-neutral);
+  --color-neutral-border: var(--border-neutral);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo,
+    Consolas, monospace;
+}
+
+* {
+  border-color: var(--border-primary);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--bg-info);
+  color: var(--text-info);
+}
+
+/* Numeric/tabular figures for ledger amounts */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
