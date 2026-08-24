@@ -12,23 +12,31 @@ diagnosis the role description calls out specifically.
 
 The job description asks for someone who can monitor payment flows across
 rails, reconcile crypto and fiat across banks, PFIs, liquidity providers,
-and exchanges, triage exceptions, and bring an AI-first mindset to cutting
-down manual work. So I built a small dashboard that simulates that
-workflow: a reconciliation table, a live exceptions queue, and a
-diagnostic trail view for tracing a stalled payment across systems. It's
-not a real integration, the data is mocked, but the interactions are
-real.
+and exchanges, triage exceptions, coordinate with Treasury, and bring an
+AI-first mindset to cutting down manual work. So I built a small dashboard
+that simulates that workflow: a reconciliation table, a treasury snapshot,
+a live exceptions queue, and a diagnostic trail view for tracing a stalled
+payment across systems. It's not a real integration, the data is mocked,
+but the interactions are real.
 
 ## What it does
 
 - **KPI strip**: settlement latency (p50/p95), exception rate, today's
   throughput, and open breaks, both by count and dollar value.
+- **Treasury snapshot**: operating balances vs. target by currency and
+  venue, maps to the JD's treasury coordination, prefunding, and
+  rebalancing bullet.
 - **Reconciliation table**: internal ledger balances next to
   partner-reported balances, with a matched/break status badge, a break
-  reason on hover, and a "show breaks only" filter.
+  reason on hover, a dedicated currency column, and a "show breaks only"
+  filter.
+- **Break-to-exception linking**: unresolved breaks have a "Promote to
+  exception" action that creates a real, tracked exception on the spot and
+  jumps to it in the queue below, showing how a recon-level break turns
+  into an operator's actual worklist.
 - **Exceptions queue**: stalled, returned, rejected, and
   failed-conversion payments, filterable by status, each with an age and
-  amount.
+  amount. Ages past their SOP escalation target are flagged in red.
 - **Diagnostic trail**: click any exception to expand a hop-by-hop trace
   (ledger → partner API → settlement network → bank credit) with
   check/x/clock markers showing exactly where a payment is stuck. This is
@@ -36,25 +44,34 @@ real.
   diagnosing failures that span several partners and systems.
 - **Live status updates**: the status dropdown in the detail panel
   updates the whole queue immediately.
-- **"Suggest root cause" button**: a placeholder for now. I didn't want
-  to fake an AI feature just to check a box, so it currently shows an
-  honest note about what it would do instead. More on that below.
+- **"Suggest root cause" button**: reads the exception's diagnostic trail,
+  finds the actual break point, and generates a root cause and a
+  suggested next action from it. More on how this works below.
 
 All data lives in `data/mockLedger.ts` and is completely made up. Partner
 names (Circle, Cross River, Evolve Bank, Correspondent Bank) and rails (ACH, Wire,
 RTP, SWIFT, SEPA, Solana USDC) are used only because they're realistic,
 none of this touches a real account or transaction.
 
-## About the AI-triage button
+## About the "Suggest root cause" button
 
-This was the one open question I carried through the build. The JD
-explicitly calls out an "AI-first approach... to improve exception
-handling," so I wanted the demo to have some answer to that. I decided to
-get the rest of the app solid first rather than rush a half-built AI
-feature, so right now the button is an honest placeholder rather than
-something faked. Next up: deciding between a real API call that reads the
-diagnostic trail and drafts a suggested root cause, versus a realistic
-mocked response, and building whichever I land on.
+The JD explicitly calls out an "AI-first approach... to improve exception
+handling," so I wanted the demo to have a real answer to that, not a
+placeholder. I decided against wiring up a live model API call for now,
+that needs an API key and adds real cost and setup for what's a portfolio
+project, and went with something I could stand behind as genuinely useful
+instead of just polished-looking: a small rules engine (`lib/rootCause.ts`)
+that reads an exception's diagnostic trail, finds the first hop that isn't
+a clean success, and generates a root cause and next action from it, both
+specific to that exception, not a canned response.
+
+It's not calling a language model, and I'm not labeling it as AI, the
+button says exactly what it is in its own output. But it's built as real
+logic reading real trail data rather than hardcoded text, which is why it
+also works correctly on exceptions created through the "Promote to
+exception" button, not just the original eight. If I get access to
+Bastion's API or more realistic sandbox data down the line, this is the
+piece I'd upgrade to a live model call first.
 
 ## Stack
 
@@ -70,15 +87,19 @@ bastion-payment-ops-demo/
     layout.tsx
     globals.css          -> design tokens (surface/text/border/badge roles)
   components/
+    Dashboard.tsx         -> shared state, wires recon/exceptions/treasury together
     KPIStrip.tsx
+    TreasurySnapshot.tsx
     ReconTable.tsx
     ExceptionsQueue.tsx
     ExceptionDetail.tsx
     Badge.tsx
   data/
-    mockLedger.ts         -> reconciliation + exception mock data
+    mockLedger.ts         -> reconciliation + exception + treasury mock data
   lib/
     format.ts             -> currency/age formatting helpers
+    sla.ts                 -> SOP-based SLA breach thresholds
+    rootCause.ts           -> rules engine behind "Suggest root cause"
   SOP.md                  -> recon + exception handling runbook
   README.md
 ```
