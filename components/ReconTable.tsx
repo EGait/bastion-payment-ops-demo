@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { ReconRow } from "@/data/mockLedger";
 import { Badge, reconStatusTone } from "@/components/Badge";
-import { formatUsd } from "@/lib/format";
+import { formatAmount } from "@/lib/format";
 
 export function ReconTable({
   rows,
@@ -81,15 +81,13 @@ export function ReconTable({
                   {row.counterparty}
                 </td>
                 <td className="px-4 py-2.5">
-                  <span className="rounded border border-border-secondary bg-surface-secondary px-1.5 py-0.5 text-[11px] font-medium text-text-secondary">
-                    {row.currency}
-                  </span>
+                  <Badge tone="neutral">{row.currency}</Badge>
                 </td>
                 <td className="px-4 py-2.5 text-right tabular text-text-primary">
-                  {formatUsd(row.internalAmount, row.currency)}
+                  {formatAmount(row.internalAmount)}
                 </td>
                 <td className="px-4 py-2.5 text-right tabular text-text-primary">
-                  {formatUsd(row.partnerAmount, row.currency)}
+                  {formatAmount(row.partnerAmount)}
                 </td>
                 <td className="px-4 py-2.5">
                   <Badge

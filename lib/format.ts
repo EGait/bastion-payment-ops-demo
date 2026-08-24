@@ -13,6 +13,15 @@ export function formatUsd(amount: number, currency: string = "USD"): string {
   });
 }
 
+// Plain number, no currency symbol or suffix — for tables that already
+// carry a dedicated currency column, so the amount isn't repeated per cell.
+export function formatAmount(amount: number): string {
+  return amount.toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+}
+
 export function formatCompactUsd(amount: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
