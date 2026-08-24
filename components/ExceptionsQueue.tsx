@@ -4,7 +4,7 @@ import { Fragment, useMemo, useState } from "react";
 import { ExceptionItem, ExceptionStatus } from "@/data/mockLedger";
 import { Badge, exceptionStatusTone } from "@/components/Badge";
 import { ExceptionDetail } from "@/components/ExceptionDetail";
-import { formatUsd, formatAge } from "@/lib/format";
+import { formatAmount, formatAge } from "@/lib/format";
 import { isSlaBreached } from "@/lib/sla";
 
 const FILTERS: Array<ExceptionStatus | "All"> = [
@@ -69,13 +69,14 @@ export function ExceptionsQueue({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="w-full min-w-[900px] text-sm">
           <thead>
             <tr className="border-b border-border-primary text-left text-xs font-medium uppercase tracking-wide text-text-tertiary">
               <th className="px-4 py-2 font-medium">ID</th>
               <th className="px-4 py-2 font-medium">Type</th>
               <th className="px-4 py-2 font-medium">Rail</th>
               <th className="px-4 py-2 font-medium">Partner</th>
+              <th className="px-4 py-2 font-medium">Currency</th>
               <th className="px-4 py-2 font-medium text-right">Amount</th>
               <th className="px-4 py-2 font-medium">Status</th>
               <th className="px-4 py-2 font-medium text-right">Age</th>
@@ -117,8 +118,11 @@ export function ExceptionsQueue({
                     <td className="px-4 py-2.5 text-text-primary">
                       {exc.partner}
                     </td>
+                    <td className="px-4 py-2.5">
+                      <Badge tone="neutral">{exc.currency}</Badge>
+                    </td>
                     <td className="px-4 py-2.5 text-right tabular text-text-primary">
-                      {formatUsd(exc.amount, exc.currency)}
+                      {formatAmount(exc.amount)}
                     </td>
                     <td className="px-4 py-2.5">
                       <Badge tone={exceptionStatusTone(exc.status)}>
@@ -145,7 +149,7 @@ export function ExceptionsQueue({
                   </tr>
                   {isOpen && (
                     <tr key={`${exc.id}-detail`} className="border-b border-border-primary last:border-0">
-                      <td colSpan={7} className="p-0">
+                      <td colSpan={8} className="p-0">
                         <ExceptionDetail
                           exception={exc}
                           onStatusChange={onStatusChange}
@@ -159,7 +163,7 @@ export function ExceptionsQueue({
             {visible.length === 0 && (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={8}
                   className="px-4 py-8 text-center text-sm text-text-tertiary"
                 >
                   No exceptions in this state.

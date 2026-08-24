@@ -1,5 +1,5 @@
 import { TreasuryBalance } from "@/data/mockLedger";
-import { formatUsd } from "@/lib/format";
+import { formatAmount } from "@/lib/format";
 import { Badge, type BadgeTone } from "@/components/Badge";
 
 function statusTone(status: TreasuryBalance["status"]): BadgeTone {
@@ -38,11 +38,11 @@ export function TreasurySnapshot({ balances }: { balances: TreasuryBalance[] }) 
                 <Badge tone={statusTone(b.status)}>{b.status}</Badge>
               </div>
               <div className="mt-1.5 text-lg font-semibold tabular text-text-primary">
-                {formatUsd(b.balance, b.currency)}
+                {formatAmount(b.balance)}
               </div>
               <div className="text-xs text-text-secondary">{b.venue}</div>
               <div className="mt-2 text-xs tabular text-text-tertiary">
-                Target {formatUsd(b.target, b.currency)} ({pctOfTarget}%)
+                Target {formatAmount(b.target)} ({pctOfTarget}%)
               </div>
               <div className="mt-1 text-[11px] text-text-tertiary">
                 Last rebalanced {b.lastRebalanced}
