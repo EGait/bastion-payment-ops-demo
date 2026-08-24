@@ -1,54 +1,67 @@
 # Bastion Payment Ops Demo
 
-A working reconciliation and exceptions dashboard, built as a portfolio piece
-for Bastion's **Payment Operations Associate** role. It's a small,
-self-contained simulation of the daily workflow the job description
-describes — not a real integration, just a demonstration that I understand
-what the job actually involves and can build the tooling around it.
+I built this as part of my application for Bastion's Payment Operations
+Associate role. Instead of just listing payments experience on a resume, I
+wanted to show I actually understand what the job involves — daily
+reconciliation, exception handling, and the kind of cross-partner
+diagnosis the role description calls out specifically.
 
-**Live demo:** _add your Vercel URL here after deploying_
+**Live demo:** _add link once deployed_
 
-## Why this exists
+## Why I built this
 
-The JD asks for someone who can monitor payment flows across rails,
-reconcile crypto and fiat across banks/PFIs/liquidity providers/exchanges,
-triage exceptions, and bring an "AI-first" approach to cutting manual
-effort. Rather than just describing that experience on a resume, this repo
-shows a working (if mocked) version of the tools that work would run on.
+The job description asks for someone who can monitor payment flows across
+rails, reconcile crypto and fiat across banks, PFIs, liquidity providers,
+and exchanges, triage exceptions, and bring an AI-first mindset to cutting
+down manual work. So I built a small dashboard that simulates that
+workflow: a reconciliation table, a live exceptions queue, and a
+diagnostic trail view for tracing a stalled payment across systems. It's
+not a real integration — the data is mocked — but the interactions are
+real.
 
-## What's in the demo
+## What it does
 
-| Feature | Maps to |
-|---|---|
-| **KPI strip** — settlement latency (p50/p95), exception rate, throughput, open breaks | "KPI tracking: throughput, settlement latency, exception rates" |
-| **Reconciliation table** — internal ledger vs. partner ledger, matched/break status, break reasons, "show breaks only" filter | "Daily reconciliation of crypto and fiat across banks, PFIs, liquidity providers, and exchanges — clearing breaks" |
-| **Exceptions queue** — stalled/return/failed-conversion/reject, by rail and partner, status filters | "Exception handling: returns, rejects, recalls — driving them to resolution" |
-| **Diagnostic trail** (click a row to expand) — hop-by-hop path across ledger → partner API → settlement network → bank credit, with success/fail/pending markers | "Diagnosing failures that span several partners and systems" |
-| **Live status updates** — dropdown in the detail panel updates queue state immediately | Day-to-day exception workflow |
-| **"Suggest root cause" button** | Placeholder for the JD's "AI-first... improve exception handling" ask — intentionally left as an honest placeholder (see below) rather than faked, while the rest of the app got built first |
-| **SOP.md** | "Build or rewrite SOPs and runbooks" |
+- **KPI strip** — settlement latency (p50/p95), exception rate, today's
+  throughput, and open breaks, both by count and dollar value.
+- **Reconciliation table** — internal ledger balances next to
+  partner-reported balances, with a matched/break status badge, a break
+  reason on hover, and a "show breaks only" filter.
+- **Exceptions queue** — stalled, returned, rejected, and
+  failed-conversion payments, filterable by status, each with an age and
+  amount.
+- **Diagnostic trail** — click any exception to expand a hop-by-hop trace
+  (ledger → partner API → settlement network → bank credit) with
+  check/x/clock markers showing exactly where a payment is stuck. This is
+  the piece I'm proudest of — it's a direct answer to the JD's line about
+  diagnosing failures that span several partners and systems.
+- **Live status updates** — the status dropdown in the detail panel
+  updates the whole queue immediately.
+- **"Suggest root cause" button** — a placeholder for now. I didn't want
+  to fake an AI feature just to check a box, so it currently shows an
+  honest note about what it would do instead. More on that below.
 
-All data lives in `data/mockLedger.ts` and is fabricated — no real
-partners, accounts, or transactions. Partner and rail names (Circle, Cross
-River, Evolve Bank, Signet; ACH/Wire/RTP/SWIFT/SEPA/Solana USDC) are used
-only as realistic labels.
+All data lives in `data/mockLedger.ts` and is completely made up. Partner
+names (Circle, Cross River, Evolve Bank, Signet) and rails (ACH, Wire,
+RTP, SWIFT, SEPA, Solana USDC) are used only because they're realistic —
+none of this touches a real account or transaction.
 
-### About the AI-triage button
+## About the AI-triage button
 
-The JD explicitly calls out an AI-first approach as a differentiator, so
-the exceptions detail panel has a **"Suggest root cause"** button. Right
-now it reveals an honest placeholder note rather than a live or faked
-result — the decision on how far to take it (a real Claude API call
-reading the diagnostic trail vs. a realistic mocked response) was
-deliberately deferred until the rest of the app was solid. That's the
-next thing to build here.
+This was the one open question I carried through the build. The JD
+explicitly calls out an "AI-first approach... to improve exception
+handling," so I wanted the demo to have some answer to that. I decided to
+get the rest of the app solid first rather than rush a half-built AI
+feature, so right now the button is an honest placeholder rather than
+something faked. Next up: deciding between a real API call that reads the
+diagnostic trail and drafts a suggested root cause, versus a realistic
+mocked response — and building whichever I land on.
 
 ## Stack
 
-Next.js (App Router) + TypeScript + Tailwind CSS 4. Same stack as my other
-projects, and a realistic choice for a startup like Bastion.
+Next.js (App Router), TypeScript, Tailwind CSS 4 — the same stack I use
+elsewhere, and a realistic choice for a startup like Bastion.
 
-## Structure
+## Project structure
 
 ```
 bastion-payment-ops-demo/
@@ -70,7 +83,7 @@ bastion-payment-ops-demo/
   README.md
 ```
 
-## Running locally
+## Running it locally
 
 ```bash
 npm install
@@ -81,5 +94,5 @@ Then open http://localhost:3000.
 
 ## Deploying
 
-Push to GitHub and import into Vercel — no environment variables or
-external services required for the current (mocked) version.
+I'm deploying this on Vercel, straight from this GitHub repo — no
+environment variables needed for the current mocked version.
