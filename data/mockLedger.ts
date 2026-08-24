@@ -13,7 +13,7 @@ export type Partner =
   | "Circle"
   | "Cross River"
   | "Evolve Bank"
-  | "Signet";
+  | "Correspondent Bank";
 
 export type ReconStatus = "matched" | "break";
 
@@ -134,7 +134,7 @@ export const reconRows: ReconRow[] = [
     id: "RCN-10235",
     date: "2026-08-24",
     rail: "SWIFT",
-    counterparty: "Signet",
+    counterparty: "Correspondent Bank",
     currency: "USD",
     internalAmount: 2_150_000,
     partnerAmount: 2_150_000,
@@ -154,7 +154,7 @@ export const reconRows: ReconRow[] = [
     id: "RCN-10237",
     date: "2026-08-24",
     rail: "SEPA",
-    counterparty: "Signet",
+    counterparty: "Correspondent Bank",
     currency: "EUR",
     internalAmount: 96_800,
     partnerAmount: 95_800,
@@ -206,7 +206,7 @@ export const reconRows: ReconRow[] = [
     id: "RCN-10242",
     date: "2026-08-24",
     rail: "SWIFT",
-    counterparty: "Signet",
+    counterparty: "Correspondent Bank",
     currency: "USD",
     internalAmount: 1_204_500,
     partnerAmount: 1_202_500,
@@ -382,7 +382,7 @@ export const exceptions: ExceptionItem[] = [
     id: "EXC-4475",
     type: "Reject",
     rail: "SEPA",
-    partner: "Signet",
+    partner: "Correspondent Bank",
     amount: 18_400,
     currency: "EUR",
     status: "New",
@@ -396,7 +396,7 @@ export const exceptions: ExceptionItem[] = [
         time: "10:02",
       },
       {
-        label: "Signet payment gateway",
+        label: "Correspondent Bank payment gateway",
         state: "success",
         detail: "Instruction forwarded to beneficiary bank.",
         time: "10:03",

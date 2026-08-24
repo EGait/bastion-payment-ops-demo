@@ -6,7 +6,7 @@ wanted to show I actually understand what the job involves — daily
 reconciliation, exception handling, and the kind of cross-partner
 diagnosis the role description calls out specifically.
 
-**Live demo:** _add link once deployed_
+**Live demo:** https://bastion-payment-ops-demo.vercel.app/
 
 ## Why I built this
 
@@ -41,7 +41,7 @@ real.
   honest note about what it would do instead. More on that below.
 
 All data lives in `data/mockLedger.ts` and is completely made up. Partner
-names (Circle, Cross River, Evolve Bank, Signet) and rails (ACH, Wire,
+names (Circle, Cross River, Evolve Bank, Correspondent Bank) and rails (ACH, Wire,
 RTP, SWIFT, SEPA, Solana USDC) are used only because they're realistic —
 none of this touches a real account or transaction.
 
@@ -90,7 +90,7 @@ npm install
 npm run dev
 ```
 
-Then open https://bastion-payment-ops-demo.vercel.app/
+Then open http://localhost:3000.
 
 ## Deploying
 
