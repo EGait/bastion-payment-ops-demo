@@ -48,8 +48,7 @@ export function KPIStrip({ kpi }: { kpi: KpiSnapshot }) {
     <div className="flex flex-wrap gap-3">
       <StatCard
         label="Settlement latency"
-        value={`${kpi.settlementLatencyP50Minutes}m p50`}
-        sub={`${kpi.settlementLatencyP95Minutes}m p95`}
+        value={`${kpi.settlementLatencyAvgMinutes}m avg`}
         delta={<DeltaTag value={kpi.latencyDeltaPct} invert />}
       />
       <StatCard

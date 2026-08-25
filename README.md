@@ -21,7 +21,7 @@ but the interactions are real.
 
 ## What it does
 
-- **KPI strip**: settlement latency (p50/p95), exception rate, today's
+- **KPI strip**: average settlement latency, exception rate, today's
   throughput, and open breaks, both by count and dollar value.
 - **Treasury snapshot**: operating balances vs. target by currency and
   venue, maps to the JD's treasury coordination, prefunding, and

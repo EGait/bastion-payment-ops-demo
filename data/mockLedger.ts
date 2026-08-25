@@ -77,8 +77,7 @@ export interface TreasuryBalance {
 }
 
 export interface KpiSnapshot {
-  settlementLatencyP50Minutes: number;
-  settlementLatencyP95Minutes: number;
+  settlementLatencyAvgMinutes: number;
   latencyDeltaPct: number; // vs. 7-day avg, negative = faster
   exceptionRatePct: number;
   exceptionRateDeltaPct: number; // vs. 7-day avg
@@ -89,8 +88,7 @@ export interface KpiSnapshot {
 }
 
 export const kpiSnapshot: KpiSnapshot = {
-  settlementLatencyP50Minutes: 6,
-  settlementLatencyP95Minutes: 41,
+  settlementLatencyAvgMinutes: 12,
   latencyDeltaPct: -8,
   exceptionRatePct: 1.8,
   exceptionRateDeltaPct: 0.3,
