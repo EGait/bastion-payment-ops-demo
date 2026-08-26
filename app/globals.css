@@ -97,14 +97,29 @@
   --color-neutral-text: var(--text-neutral);
   --color-neutral-border: var(--border-neutral);
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo,
-    Consolas, monospace;
+  /* System stack on purpose: no webfont request, no layout shift, and it
+     renders natively on every platform. An earlier version named Inter and
+     IBM Plex Mono here without ever loading them, so the design silently fell
+     back anyway — this is the same result, stated honestly. Swap in
+     next/font/google if a branded face is wanted later. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
+    "Liberation Mono", monospace;
 }
 
-* {
-  border-color: var(--border-primary);
+/* Default border colour. This MUST live in @layer base: Tailwind emits its
+   utilities inside @layer utilities, and unlayered declarations beat layered
+   ones regardless of specificity — so an unlayered `*` rule here silently
+   overrides every border-* colour utility in the app (active tab indicator,
+   badge tones, focus rings included). */
+@layer base {
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--border-primary);
+  }
 }
 
 html,

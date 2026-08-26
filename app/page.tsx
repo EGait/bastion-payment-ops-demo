@@ -1,17 +1,21 @@
 import { Dashboard } from "@/components/Dashboard";
 import {
+  AS_OF,
   kpiSnapshot,
   reconRows,
   exceptions,
-  treasuryBalances,
+  treasuryAccounts,
 } from "@/data/mockLedger";
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
       <header className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-xs font-medium text-text-tertiary">
-          <span className="flex h-5 w-5 items-center justify-center rounded bg-brand text-[10px] font-bold text-text-inverse">
+          <span
+            aria-hidden="true"
+            className="flex h-5 w-5 items-center justify-center rounded bg-brand text-[10px] font-bold text-text-inverse"
+          >
             B
           </span>
           Payment Operations
@@ -20,8 +24,9 @@ export default function DashboardPage() {
           Reconciliation &amp; exceptions
         </h1>
         <p className="text-sm text-text-secondary">
-          Live view of today&apos;s crypto and fiat settlement across banks,
-          PFIs, liquidity providers, and exchanges.
+          Today&apos;s crypto and fiat settlement across banks, a stablecoin
+          issuer, an OTC liquidity desk, and correspondent partners, as of{" "}
+          {AS_OF} CT.
         </p>
       </header>
 
@@ -29,7 +34,7 @@ export default function DashboardPage() {
         kpi={kpiSnapshot}
         initialRecon={reconRows}
         initialExceptions={exceptions}
-        treasuryBalances={treasuryBalances}
+        treasuryAccounts={treasuryAccounts}
       />
 
       <footer className="mt-2 border-t border-border-primary pt-4 text-xs text-text-tertiary">
@@ -37,6 +42,6 @@ export default function DashboardPage() {
         application. All data is mocked — no real accounts, partners, or
         transactions.
       </footer>
-    </div>
+    </main>
   );
 }

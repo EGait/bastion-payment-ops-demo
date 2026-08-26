@@ -16,10 +16,10 @@ covered separately.
 
 ## 2. Daily reconciliation cycle
 
-1. **Pull balances.** At each scheduled cutoff, compare the internal
-   ledger balance against the partner-reported balance for every
-   bank/PFI/liquidity provider/exchange counterparty and every rail (ACH,
-   Wire, RTP, SWIFT, SEPA, Solana USDC).
+1. **Pull settlement detail.** At each scheduled cutoff, compare each
+   internal ledger entry against the partner's reported settlement, for
+   every bank/PFI/liquidity provider/exchange counterparty and every rail
+   (ACH, Wire, RTP, SWIFT, SEPA, Solana USDC).
 2. **Auto-match.** Rows where internal and partner amounts agree exactly
    are marked `Matched` and require no action.
 3. **Flag breaks.** Any mismatch is marked `Break` and classified into one
@@ -35,7 +35,7 @@ covered separately.
 
 | Reason | Likely cause | First response |
 |---|---|---|
-| Amount mismatch | FX rate variance, correspondent/network fee deducted in transit, partial settlement | Confirm rate/fee schedule with partner; if unexplained after one cycle, escalate |
+| Amount mismatch | Correspondent/intermediary fee deducted in transit, partial fill, or one instruction in a bulk file returned separately. FX variance only where the two sides are in different currencies — never on a EUR-vs-EUR SEPA leg | Confirm fee schedule or fill status with partner; if unexplained after one cycle, escalate |
 | Missing on partner ledger | Payment in flight, not yet settled on partner's side | Recheck next cutoff; if still missing after 2 cycles, contact partner ops |
 | On internal ledger, not yet visible on partner API | Webhook/API lag, or the counterparty's indexer/ledger hasn't caught up | Poll partner status endpoint; escalate if lag exceeds partner's stated SLA |
 | Duplicate or unexpected entry | Retry logic double-submitted, or partner-side duplicate | Freeze the entry, do not resubmit, escalate to eng + partner before touching balances |
@@ -68,11 +68,31 @@ before anyone starts investigating.
 
 ### Response targets
 
+Terminal failures carry a flat clock: they need a person regardless of how
+fast the rail is.
+
 | Type | First response | Escalate if unresolved after |
 |---|---|---|
-| Stalled | 15 min | 2 hours |
 | Return / Reject | 30 min | 4 hours |
 | Failed conversion | 15 min | 1 hour (higher priority — usually blocks downstream settlement) |
+| Recon break (amount mismatch) | 1 hour | 8 hours |
+
+A **stall** is different: the target has to follow the rail, because "late"
+means something completely different on RTP than on SWIFT. A stalled payment
+escalates after two of its rail's normal settlement windows, with a 15-minute
+floor so instant rails don't page anyone over ordinary jitter.
+
+| Rail | Normal settlement window | Stall escalation |
+|---|---|---|
+| RTP | seconds | 15 min |
+| Solana USDC | ~5 min | 15 min |
+| Wire (domestic) | ~2 hours | 4 hours |
+| ACH | next banking day | 48 hours |
+| SEPA | next business day | 48 hours |
+| SWIFT | up to 2 business days | 96 hours |
+
+Implemented in `lib/sla.ts`; the queue's Age column is measured against these
+targets, not against a single global clock.
 
 ## 4. Treasury coordination
 
@@ -95,6 +115,8 @@ what's already been ruled out — not just "this is stuck."
 
 Recurring break reasons and exception types are reviewed periodically to
 identify automation opportunities — auto-resolving known-benign timing
-lags, auto-classifying exceptions by trail pattern, and (in progress)
-AI-assisted root-cause suggestions drafted from the diagnostic trail to
-cut first-response time on Investigating-stage exceptions.
+lags, auto-classifying exceptions by trail pattern, and trail-pattern
+root-cause suggestions to cut first-response time on Investigating-stage
+exceptions. Those suggestions are rules-based today, reading the diagnostic
+trail directly; a model-assisted version is the next step once there's
+realistic data to evaluate it against.

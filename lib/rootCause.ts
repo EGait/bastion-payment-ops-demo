@@ -7,6 +7,7 @@ export interface RootCauseSuggestion {
 }
 
 type Category =
+  | "complianceHold"
   | "issuerMint"
   | "onchainSettlement"
   | "conversion"
@@ -17,9 +18,26 @@ type Category =
 
 function categorize(label: string): Category {
   const l = label.toLowerCase();
+  // Compliance holds first: a sanctions review sitting on a partner's wire
+  // desk is not a gateway problem, and the right next step is completely
+  // different from "check their status page".
+  if (
+    l.includes("sanctions") ||
+    l.includes("screening") ||
+    l.includes("ofac") ||
+    l.includes("compliance")
+  )
+    return "complianceHold";
   if (l.includes("mint")) return "issuerMint";
-  if (l.includes("settlement") || l.includes("solana")) return "onchainSettlement";
-  if (l.includes("off-ramp") || l.includes("conversion")) return "conversion";
+  if (l.includes("settlement") || l.includes("solana"))
+    return "onchainSettlement";
+  if (
+    l.includes("off-ramp") ||
+    l.includes("conversion") ||
+    l.includes("redemption") ||
+    l.includes("burn")
+  )
+    return "conversion";
   if (
     l.includes("bank credit") ||
     l.includes("beneficiary") ||
@@ -39,47 +57,53 @@ function categorize(label: string): Category {
 }
 
 const NEXT_ACTIONS: Record<Category, { failed: string; pending: string }> = {
+  complianceHold: {
+    failed:
+      "Treat this as a compliance matter, not a payments one. Loop in Compliance with the beneficiary details and the screening hit; do not resubmit the payment until they clear it.",
+    pending:
+      "Supply the partner's compliance team with full beneficiary details and purpose of payment — that's what releases a fuzzy-match hold. Escalate internally to Compliance in parallel rather than waiting on the wire desk.",
+  },
   issuerMint: {
     failed:
-      "Escalate directly to the issuer's mint desk with the transaction reference. This failed before anything reached the chain, so it's safe to retry once they confirm the cause.",
+      "Check the funding balance in the Mint account before anything else; most mint rejections are an unposted funding wire rather than an issuer fault. Escalate to the issuer's mint desk with the request reference only if the balance is there.",
     pending:
-      "Check the issuer's mint API status before escalating, this step occasionally lags during high network load rather than being a real failure.",
+      "Check the issuer's mint API status before escalating — this step occasionally lags during high network load rather than failing outright.",
   },
   onchainSettlement: {
     failed:
-      "Confirm the transaction hash on a Solana block explorer before assuming it failed outright, on-chain rejections are rare and may just need resubmission with adjusted parameters.",
+      "Confirm the transaction signature on a Solana explorer before assuming it failed outright. On-chain rejections are rare and usually need resubmission with adjusted parameters rather than escalation.",
     pending:
-      "Check the transaction hash on a Solana block explorer. If it shows confirmed on-chain, this is a reporting lag, not a lost payment.",
+      "Check the transaction signature on a Solana explorer. If it shows finalized, this is a reporting lag rather than a lost payment.",
   },
   conversion: {
     failed:
-      "Do not resubmit the underlying mint or burn. Escalate the conversion specifically to the partner's off-ramp desk, the on-chain leg already completed.",
+      "Confirm whether the burn actually executed before doing anything else. If it didn't, the funds are intact and this is a limit or eligibility problem to raise with the partner's redemption desk — not something to retry blindly.",
     pending:
-      "Give the conversion a little more time before escalating, off-ramp confirmations sometimes trail the on-chain leg by several minutes.",
+      "Give the conversion a little more time before escalating; off-ramp confirmations sometimes trail the on-chain leg by several minutes.",
   },
   receivingBank: {
     failed:
       "Contact the receiving bank with the return or reject code, and confirm updated beneficiary details with the customer before resubmitting.",
     pending:
-      "Everything upstream completed cleanly, so this reads as a confirmation delay on the receiving side rather than a lost payment. Worth one more check before escalating.",
+      "Everything upstream completed cleanly, so this reads as a confirmation delay on the receiving side rather than a lost payment. On an instant rail, though, a missing completion message past the settlement window is a hard stall — raise it with the partner rather than waiting.",
   },
   partnerLedger: {
     failed:
       "Confirm directly with the partner whether the transaction shows on their side before writing off the balance.",
     pending:
-      "This was just promoted from a recon break and hasn't been independently verified with the partner yet, follow up with them directly rather than re-running reconciliation.",
+      "The payment itself has settled; what's missing is the partner's confirmation. Poll their status endpoint and, if the lag is past their stated SLA, raise it with their ops team — reconciliation won't resolve this on its own.",
   },
   partnerGateway: {
     failed:
-      "Escalate to the partner's operations desk with the exception ID, the failure is isolated to their gateway rather than anything upstream.",
+      "Escalate to the partner's operations desk with the exception ID. The failure is isolated to their gateway rather than anything upstream.",
     pending:
       "This step is past its normal turnaround. Check the partner's status page or reach out to their ops desk before escalating internally.",
   },
   unknown: {
     failed:
-      "Escalate to the Payment Operations Lead with the exception ID, the failure point doesn't match a recognized pattern and needs manual review.",
+      "Escalate to the Payment Operations Lead with the exception ID. The failure point doesn't match a recognized pattern and needs manual review.",
     pending:
-      "This step is taking longer than usual. Recheck in a few minutes, and escalate if it's still open next cycle.",
+      "This step is taking longer than usual. Recheck in a few minutes and escalate if it's still open next cycle.",
   },
 };
 

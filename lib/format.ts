@@ -22,6 +22,14 @@ export function formatAmount(amount: number): string {
   });
 }
 
+// Signed amount with an explicit +/- so direction reads at a glance. Zero is
+// rendered plain — "+0" and "-0" both look like bugs.
+export function formatSigned(amount: number): string {
+  if (amount === 0) return formatAmount(0);
+  const sign = amount > 0 ? "+" : "-";
+  return `${sign}${formatAmount(Math.abs(amount))}`;
+}
+
 export function formatCompactUsd(amount: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

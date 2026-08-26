@@ -1,3 +1,5 @@
+import { ExceptionStatus, ReconStatus, TreasuryStatus } from "@/data/mockLedger";
+
 export type BadgeTone = "success" | "danger" | "warning" | "info" | "neutral";
 
 const toneClasses: Record<BadgeTone, string> = {
@@ -27,13 +29,11 @@ export function Badge({
   );
 }
 
-export function reconStatusTone(status: "matched" | "break"): BadgeTone {
+export function reconStatusTone(status: ReconStatus): BadgeTone {
   return status === "matched" ? "success" : "danger";
 }
 
-export function exceptionStatusTone(
-  status: "New" | "Investigating" | "Escalated" | "Resolved"
-): BadgeTone {
+export function exceptionStatusTone(status: ExceptionStatus): BadgeTone {
   switch (status) {
     case "New":
       return "info";
@@ -43,5 +43,16 @@ export function exceptionStatusTone(
       return "danger";
     case "Resolved":
       return "success";
+  }
+}
+
+export function treasuryStatusTone(status: TreasuryStatus): BadgeTone {
+  switch (status) {
+    case "Adequate":
+      return "success";
+    case "Watch":
+      return "info";
+    case "Below target":
+      return "warning";
   }
 }

@@ -1,4 +1,4 @@
-import { KpiSnapshot } from "@/data/mockLedger";
+import { DashboardKpis } from "@/lib/kpi";
 import { formatCompactUsd } from "@/lib/format";
 
 function DeltaTag({ value, invert = false }: { value: number; invert?: boolean }) {
@@ -35,7 +35,7 @@ function StatCard({
       <div className="mt-1.5 text-2xl font-semibold tabular text-text-primary">
         {value}
       </div>
-      <div className="mt-1 flex items-center gap-2 text-xs text-text-secondary">
+      <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-text-secondary">
         {sub && <span>{sub}</span>}
         {delta}
       </div>
@@ -43,19 +43,21 @@ function StatCard({
   );
 }
 
-export function KPIStrip({ kpi }: { kpi: KpiSnapshot }) {
+export function KPIStrip({ kpi }: { kpi: DashboardKpis }) {
   return (
     <div className="flex flex-wrap gap-3">
       <StatCard
         label="Settlement latency"
         value={`${kpi.settlementLatencyAvgMinutes}m avg`}
+        sub="submission → partner ack"
         delta={<DeltaTag value={kpi.latencyDeltaPct} invert />}
       />
       <StatCard
         label="Exception rate"
         value={`${kpi.exceptionRatePct}%`}
-        sub="of today's volume"
-        delta={<DeltaTag value={kpi.exceptionRateDeltaPct} invert />}
+        sub={`${kpi.exceptionCount} of ${kpi.throughputTodayCount.toLocaleString(
+          "en-US"
+        )} payments today`}
       />
       <StatCard
         label="Throughput today"
@@ -65,7 +67,9 @@ export function KPIStrip({ kpi }: { kpi: KpiSnapshot }) {
       <StatCard
         label="Open breaks"
         value={`${kpi.openBreaksCount}`}
-        sub={`${formatCompactUsd(kpi.openBreaksVolumeUsd)} at risk`}
+        sub={`${formatCompactUsd(
+          kpi.openBreaksVarianceUsd
+        )} unreconciled variance`}
       />
     </div>
   );

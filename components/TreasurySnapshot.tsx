@@ -1,55 +1,72 @@
-import { TreasuryBalance } from "@/data/mockLedger";
-import { formatAmount } from "@/lib/format";
-import { Badge, type BadgeTone } from "@/components/Badge";
+import { CurrencyPosition } from "@/lib/ledger";
+import { formatAmount, formatSigned } from "@/lib/format";
+import { Badge, treasuryStatusTone } from "@/components/Badge";
 
-function statusTone(status: TreasuryBalance["status"]): BadgeTone {
-  switch (status) {
-    case "Adequate":
-      return "success";
-    case "Low":
-      return "warning";
-    case "Rebalancing":
-      return "info";
-  }
-}
-
-export function TreasurySnapshot({ balances }: { balances: TreasuryBalance[] }) {
+export function TreasurySnapshot({
+  positions,
+}: {
+  positions: CurrencyPosition[];
+}) {
   return (
-    <section className="rounded-lg border border-border-primary bg-surface-primary">
+    <section
+      aria-labelledby="treasury-heading"
+      className="rounded-lg border border-border-primary bg-surface-primary"
+    >
       <div className="border-b border-border-primary px-4 py-3">
-        <h2 className="text-sm font-semibold text-text-primary">
+        <h2
+          id="treasury-heading"
+          className="text-sm font-semibold text-text-primary"
+        >
           Treasury snapshot
         </h2>
         <p className="text-xs text-text-secondary">
-          Operating balances vs. target, by venue. Feeds prefunding and
-          rebalancing decisions alongside today&apos;s throughput and open
-          breaks.
+          Closing balances vs. target, by venue. Each balance is the
+          account&apos;s opening balance plus today&apos;s net settlement
+          movement — the same figure the Cash movement tab reconciles to.
         </p>
       </div>
       <div className="grid gap-px bg-border-primary sm:grid-cols-3">
-        {balances.map((b) => {
-          const pctOfTarget = Math.round((b.balance / b.target) * 100);
-          return (
-            <div key={b.venue} className="bg-surface-primary p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
-                  {b.currency}
-                </span>
-                <Badge tone={statusTone(b.status)}>{b.status}</Badge>
-              </div>
-              <div className="mt-1.5 text-lg font-semibold tabular text-text-primary">
-                {formatAmount(b.balance)}
-              </div>
-              <div className="text-xs text-text-secondary">{b.venue}</div>
-              <div className="mt-2 text-xs tabular text-text-tertiary">
-                Target {formatAmount(b.target)} ({pctOfTarget}%)
-              </div>
-              <div className="mt-1 text-[11px] text-text-tertiary">
-                Last rebalanced {b.lastRebalanced}
-              </div>
+        {positions.map((p) => (
+          <div key={p.currency} className="bg-surface-primary p-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-text-tertiary">
+                {p.currency}
+              </span>
+              <Badge tone={treasuryStatusTone(p.status)}>{p.status}</Badge>
             </div>
-          );
-        })}
+            <div className="mt-1.5 text-lg font-semibold tabular text-text-primary">
+              {formatAmount(p.closingBalance)}
+            </div>
+            <div className="text-xs text-text-secondary">{p.venue}</div>
+            <div className="mt-2 text-xs tabular text-text-tertiary">
+              Target {formatAmount(p.target)} ({p.pctOfTarget}%)
+            </div>
+
+            {p.prefundRequired > 0 ? (
+              <div className="mt-2 rounded border border-warning-border bg-warning-bg px-2 py-1 text-[11px] font-medium text-warning-text">
+                Prefund {formatAmount(p.prefundRequired)} {p.currency} to reach
+                target
+              </div>
+            ) : null}
+
+            <div className="mt-2 flex flex-wrap items-center gap-x-1.5 text-[11px] text-text-tertiary">
+              <span>Net today</span>
+              <span
+                className={`tabular font-medium ${
+                  p.net > 0
+                    ? "text-success-text"
+                    : p.net < 0
+                      ? "text-danger-text"
+                      : "text-text-tertiary"
+                }`}
+              >
+                {formatSigned(p.net)}
+              </span>
+              <span aria-hidden="true">·</span>
+              <span>Last rebalanced {p.lastRebalanced}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
