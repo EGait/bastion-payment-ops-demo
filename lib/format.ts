@@ -13,7 +13,7 @@ export function formatUsd(amount: number, currency: string = "USD"): string {
   });
 }
 
-// Plain number, no currency symbol or suffix — for tables that already
+// Plain number, no currency symbol or suffix, for tables that already
 // carry a dedicated currency column, so the amount isn't repeated per cell.
 export function formatAmount(amount: number): string {
   return amount.toLocaleString("en-US", {
@@ -23,7 +23,7 @@ export function formatAmount(amount: number): string {
 }
 
 // Signed amount with an explicit +/- so direction reads at a glance. Zero is
-// rendered plain — "+0" and "-0" both look like bugs.
+// rendered plain, since "+0" and "-0" both look like bugs.
 export function formatSigned(amount: number): string {
   if (amount === 0) return formatAmount(0);
   const sign = amount > 0 ? "+" : "-";

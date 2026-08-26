@@ -2,7 +2,7 @@
 //
 // Shapes here are deliberately close to what a real payments-ops stack
 // exposes: an internal ledger entry next to the partner's reported
-// settlement, a match/break verdict, and — for exceptions — a hop-by-hop
+// settlement, a match/break verdict, and for exceptions a hop-by-hop
 // trail across the systems a stalled or failed payment could be sitting in.
 //
 // This file holds INPUTS only. Closing balances, funding status, open-break
@@ -30,7 +30,7 @@ export type Currency = "USD" | "USDC" | "EUR";
 
 // Indicative rates, used only to express a mixed-currency total as one USD
 // figure (the unreconciled variance across breaks). Frozen so the numbers on
-// screen are reproducible. USDC is held at par — secondary-market price and
+// screen are reproducible. USDC is held at par. Secondary-market price and
 // depeg risk are out of scope for this demo.
 export const USD_FX: Record<Currency, number> = {
   USD: 1,
@@ -45,7 +45,7 @@ export function toUsd(amount: number, currency: Currency): number {
 export type ReconStatus = "matched" | "break";
 
 // Direction of CASH relative to Bastion's position: "in" = funds received,
-// "out" = funds sent. Deliberately not called credit/debit at the row level —
+// "out" = funds sent. Deliberately not called credit/debit at the row level:
 // on ACH those words name the entry type (an ACH debit *pulls* money in), and
 // in double-entry a cash receipt is a debit to an asset account. "In/Out" is
 // unambiguous on every rail, which is why the UI labels it that way.
@@ -83,7 +83,7 @@ export interface TrailHop {
   label: string;
   state: HopState;
   detail: string;
-  time: string; // HH:MM, 24h, America/Chicago — or "Yesterday HH:MM"
+  time: string; // HH:MM, 24h, America/Chicago, or "Yesterday HH:MM"
 }
 
 export interface ExceptionItem {
@@ -105,7 +105,7 @@ export type TreasuryStatus = "Adequate" | "Watch" | "Below target";
 // A treasury account holds only its OPENING balance for the day, plus the
 // counterparties whose settlement flows through it. The closing balance,
 // today's net movement, the funding status, and any prefunding requirement
-// are all derived from the reconciliation rows in lib/ledger.ts — so the
+// are all derived from the reconciliation rows in lib/ledger.ts, so the
 // treasury snapshot and the cash-movement view cannot tell different
 // stories about the same day.
 export interface TreasuryAccount {
@@ -155,7 +155,7 @@ export const reconRows: ReconRow[] = [
     status: "break",
     direction: "out",
     breakReason:
-      "Partner reports 999,000 — one 1,000 USDC transfer in the batch not yet attributed",
+      "Partner reports 999,000. One 1,000 USDC transfer in the batch not yet attributed",
   },
   {
     id: "RCN-10233",
@@ -176,7 +176,7 @@ export const reconRows: ReconRow[] = [
     partnerAmount: 0,
     status: "break",
     direction: "out",
-    breakReason: "Missing on partner ledger — no completion message received",
+    breakReason: "Missing on partner ledger, no completion message received",
     linkedExceptionId: "EXC-4476",
   },
   {
@@ -211,7 +211,7 @@ export const reconRows: ReconRow[] = [
     // SEPA SCT is euro-only and full-amount (charges are always SHA), so a
     // EUR-vs-EUR gap here is a settlement/attribution problem, never FX.
     breakReason:
-      "Amount mismatch — one €1,000 instruction in the bulk file rejected and returned separately",
+      "Amount mismatch: one €1,000 instruction in the bulk file rejected and returned separately",
   },
   {
     id: "RCN-10238",
@@ -265,7 +265,7 @@ export const reconRows: ReconRow[] = [
     status: "break",
     direction: "out",
     breakReason:
-      "Amount mismatch — $35 intermediary lifting fee deducted in transit",
+      "Amount mismatch: $35 intermediary lifting fee deducted in transit",
   },
   {
     id: "RCN-10243",
@@ -297,7 +297,7 @@ export const reconRows: ReconRow[] = [
     status: "break",
     direction: "in",
     breakReason:
-      "Partial fill — 240,000 of 250,000 USDC delivered, balance still working",
+      "Partial fill: 240,000 of 250,000 USDC delivered, balance still working",
   },
 ];
 
@@ -312,7 +312,7 @@ export const exceptions: ExceptionItem[] = [
     status: "Investigating",
     ageMinutes: 47,
     summary:
-      "Mint finalized on-chain but not yet reflected on Circle's ledger — a reporting lag, not a lost payment.",
+      "Mint finalized on-chain but not yet reflected on Circle's ledger. A reporting lag, not a lost payment.",
     linkedReconId: "RCN-10240",
     trail: [
       {
@@ -337,7 +337,7 @@ export const exceptions: ExceptionItem[] = [
         label: "Circle ledger confirmation",
         state: "pending",
         detail:
-          "No confirmation webhook from Circle after 47 min — their ledger still doesn't show the mint.",
+          "No confirmation webhook from Circle after 47 min. Their ledger still doesn't show the mint.",
         time: "—",
       },
     ],
@@ -352,7 +352,7 @@ export const exceptions: ExceptionItem[] = [
     status: "New",
     ageMinutes: 12,
     summary:
-      "R03 return on yesterday's outbound credit — received in this morning's return file.",
+      "R03 return on yesterday's outbound credit, received in this morning's return file.",
     trail: [
       {
         label: "Bastion ledger",
@@ -370,7 +370,7 @@ export const exceptions: ExceptionItem[] = [
       {
         label: "Receiving bank",
         state: "failed",
-        detail: "R03 return — no account / unable to locate account.",
+        detail: "R03 return: no account / unable to locate account.",
         time: "10:08",
       },
     ],
@@ -385,7 +385,7 @@ export const exceptions: ExceptionItem[] = [
     status: "Escalated",
     ageMinutes: 134,
     summary:
-      "USDC → USD redemption rejected at Circle before the burn — funds intact, nothing to recover.",
+      "USDC to USD redemption rejected at Circle before the burn. Funds intact, nothing to recover.",
     trail: [
       {
         label: "Bastion ledger",
@@ -396,20 +396,20 @@ export const exceptions: ExceptionItem[] = [
       {
         label: "Circle redemption API",
         state: "failed",
-        detail: "Redemption rejected — daily redemption limit exceeded.",
+        detail: "Redemption rejected: daily redemption limit exceeded.",
         time: "08:06",
       },
       {
         label: "USDC burn",
         state: "failed",
         detail:
-          "Not attempted — request rejected upstream. Funds intact in the Circle Mint account.",
+          "Not attempted, request rejected upstream. Funds intact in the Circle Mint account.",
         time: "—",
       },
       {
         label: "Bank credit",
         state: "failed",
-        detail: "Not attempted — no burn, so nothing to settle.",
+        detail: "Not attempted, no burn so nothing to settle.",
         time: "—",
       },
     ],
@@ -441,7 +441,7 @@ export const exceptions: ExceptionItem[] = [
         label: "Cross River sanctions screening",
         state: "pending",
         detail:
-          "Held for OFAC review before release — beneficiary name hit a watchlist fuzzy match.",
+          "Held for OFAC review before release. Beneficiary name hit a watchlist fuzzy match.",
         time: "—",
       },
       {
@@ -461,7 +461,7 @@ export const exceptions: ExceptionItem[] = [
     currency: "EUR",
     status: "New",
     ageMinutes: 6,
-    summary: "AC04 reject — beneficiary account closed.",
+    summary: "AC04 reject: beneficiary account closed.",
     trail: [
       {
         label: "Bastion ledger",
@@ -478,7 +478,7 @@ export const exceptions: ExceptionItem[] = [
       {
         label: "Beneficiary bank",
         state: "failed",
-        detail: "AC04 reject — account closed.",
+        detail: "AC04 reject: account closed.",
         time: "10:14",
       },
     ],
@@ -493,7 +493,7 @@ export const exceptions: ExceptionItem[] = [
     status: "New",
     ageMinutes: 21,
     summary:
-      "RTP payment sent with no completion message — RTP settles in seconds, so 21 min is a hard stall.",
+      "RTP payment sent with no completion message. RTP settles in seconds, so 21 min is a hard stall.",
     linkedReconId: "RCN-10234",
     trail: [
       {
@@ -526,7 +526,7 @@ export const exceptions: ExceptionItem[] = [
     currency: "USD",
     status: "Resolved",
     ageMinutes: 612,
-    summary: "R01 insufficient funds — resolved, rebilled next cycle.",
+    summary: "R01 insufficient funds. Resolved, rebilled next cycle.",
     trail: [
       {
         label: "Bastion ledger",
@@ -564,7 +564,7 @@ export const exceptions: ExceptionItem[] = [
     status: "Investigating",
     ageMinutes: 33,
     summary:
-      "Mint rejected — USD funding wire hasn't posted to the Circle Mint account yet.",
+      "Mint rejected: USD funding wire hasn't posted to the Circle Mint account yet.",
     trail: [
       {
         label: "Bastion ledger",
@@ -576,13 +576,13 @@ export const exceptions: ExceptionItem[] = [
         label: "Circle Mint API",
         state: "failed",
         detail:
-          "Rejected — insufficient available balance; USD funding wire not posted.",
+          "Rejected: insufficient available balance, USD funding wire not posted.",
         time: "09:47",
       },
       {
         label: "Solana settlement",
         state: "failed",
-        detail: "Not attempted — mint rejected upstream.",
+        detail: "Not attempted, mint rejected upstream.",
         time: "—",
       },
     ],

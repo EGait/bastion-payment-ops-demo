@@ -51,8 +51,8 @@ export function ExceptionsQueue({
             Exceptions queue
           </h2>
           <p className="text-xs text-text-secondary">
-            Stalled, returned, rejected, and failed-conversion payments —
-            open a row to see the cross-partner trail.
+            Payments that didn&apos;t complete cleanly. Open a row for the
+            trail.
           </p>
         </div>
         <div
@@ -157,7 +157,7 @@ export function ExceptionsQueue({
                         </svg>
                         {exc.id}
                         <span className="sr-only">
-                          {isOpen ? " — hide" : " — show"} diagnostic trail
+                          {isOpen ? ", hide" : ", show"} diagnostic trail
                         </span>
                       </button>
                     </td>
@@ -206,7 +206,7 @@ export function ExceptionsQueue({
                               />
                             </svg>
                             <span className="sr-only">
-                              Past SLA — target {formatAge(target)}.{" "}
+                              Past SLA, target {formatAge(target)}.{" "}
                             </span>
                           </>
                         )}

@@ -61,13 +61,13 @@ const NEXT_ACTIONS: Record<Category, { failed: string; pending: string }> = {
     failed:
       "Treat this as a compliance matter, not a payments one. Loop in Compliance with the beneficiary details and the screening hit; do not resubmit the payment until they clear it.",
     pending:
-      "Supply the partner's compliance team with full beneficiary details and purpose of payment — that's what releases a fuzzy-match hold. Escalate internally to Compliance in parallel rather than waiting on the wire desk.",
+      "Supply the partner's compliance team with full beneficiary details and purpose of payment. That's what releases a fuzzy-match hold. Escalate internally to Compliance in parallel rather than waiting on the wire desk.",
   },
   issuerMint: {
     failed:
       "Check the funding balance in the Mint account before anything else; most mint rejections are an unposted funding wire rather than an issuer fault. Escalate to the issuer's mint desk with the request reference only if the balance is there.",
     pending:
-      "Check the issuer's mint API status before escalating — this step occasionally lags during high network load rather than failing outright.",
+      "Check the issuer's mint API status before escalating. This step occasionally lags during high network load rather than failing outright.",
   },
   onchainSettlement: {
     failed:
@@ -77,7 +77,7 @@ const NEXT_ACTIONS: Record<Category, { failed: string; pending: string }> = {
   },
   conversion: {
     failed:
-      "Confirm whether the burn actually executed before doing anything else. If it didn't, the funds are intact and this is a limit or eligibility problem to raise with the partner's redemption desk — not something to retry blindly.",
+      "Confirm whether the burn actually executed before doing anything else. If it didn't, the funds are intact and this is a limit or eligibility problem to raise with the partner's redemption desk, not something to retry blindly.",
     pending:
       "Give the conversion a little more time before escalating; off-ramp confirmations sometimes trail the on-chain leg by several minutes.",
   },
@@ -85,13 +85,13 @@ const NEXT_ACTIONS: Record<Category, { failed: string; pending: string }> = {
     failed:
       "Contact the receiving bank with the return or reject code, and confirm updated beneficiary details with the customer before resubmitting.",
     pending:
-      "Everything upstream completed cleanly, so this reads as a confirmation delay on the receiving side rather than a lost payment. On an instant rail, though, a missing completion message past the settlement window is a hard stall — raise it with the partner rather than waiting.",
+      "Everything upstream completed cleanly, so this reads as a confirmation delay on the receiving side rather than a lost payment. On an instant rail, though, a missing completion message past the settlement window is a hard stall. Raise it with the partner rather than waiting.",
   },
   partnerLedger: {
     failed:
       "Confirm directly with the partner whether the transaction shows on their side before writing off the balance.",
     pending:
-      "The payment itself has settled; what's missing is the partner's confirmation. Poll their status endpoint and, if the lag is past their stated SLA, raise it with their ops team — reconciliation won't resolve this on its own.",
+      "The payment itself has settled; what's missing is the partner's confirmation. Poll their status endpoint and, if the lag is past their stated SLA, raise it with their ops team. Reconciliation won't resolve this on its own.",
   },
   partnerGateway: {
     failed:

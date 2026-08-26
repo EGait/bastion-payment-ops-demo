@@ -85,18 +85,15 @@ export function CreditsDebits({
           Cash movement
         </h2>
         <p className="text-xs text-text-secondary">
-          Today&apos;s settlement legs by cash direction, as a movement
-          statement per account: opening balance, money in, money out, closing
-          balance. Money in and out aren&apos;t expected to net to zero — a
-          treasury account has inflow and outflow days — but they do have to
-          explain the change in the balance, so each closing figure here is
-          the one the Treasury snapshot shows.
+          Money in and out per account, and what it did to the balance.
+          These won&apos;t net to zero. A treasury account has inflow days and
+          outflow days. What has to hold is that opening plus net equals the
+          closing balance on the Treasury snapshot.
         </p>
         <p className="mt-1.5 text-[11px] text-text-tertiary">
-          Rows are labelled In/Out rather than credit/debit on purpose: on ACH
-          those words name the entry type — an ACH debit <em>pulls</em> funds
-          in — and in double-entry a cash receipt is a debit to an asset
-          account. In/Out is unambiguous on every rail.
+          Rows say In/Out, not credit/debit. On ACH those words name the
+          entry type, and an ACH debit <em>pulls</em> money in, so they read
+          backwards here.
         </p>
       </div>
 

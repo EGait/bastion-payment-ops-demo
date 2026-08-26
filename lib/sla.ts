@@ -6,7 +6,7 @@ import { ExceptionItem, ExceptionType, Rail } from "@/data/mockLedger";
 // the RAIL, not just the exception type. RTP settles in seconds and is
 // irrevocable; SWIFT can legitimately take two business days. Giving both a
 // flat "stalled = escalate after 2 hours" target is how an ops dashboard ends
-// up showing a 21-minute RTP stall — 84× past its window — as unremarkable,
+// up showing a 21-minute RTP stall, 84x past its window, as unremarkable,
 // while paging someone about a wire that's behaving normally.
 
 // Roughly how long each rail should take to settle end to end.
@@ -19,7 +19,7 @@ const RAIL_SETTLEMENT_WINDOW: Record<Rail, number> = {
   SWIFT: 2880, // up to two business days cross-border
 };
 
-// Terminal failures — a return, a reject, a failed conversion — need a human
+// Terminal failures (a return, a reject, a failed conversion) need a human
 // regardless of how fast the rail is, so they carry a flat clock.
 const TERMINAL_ESCALATION: Partial<Record<ExceptionType, number>> = {
   Return: 240,

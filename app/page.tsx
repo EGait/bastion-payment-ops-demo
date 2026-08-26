@@ -24,9 +24,8 @@ export default function DashboardPage() {
           Reconciliation &amp; exceptions
         </h1>
         <p className="text-sm text-text-secondary">
-          Today&apos;s crypto and fiat settlement across banks, a stablecoin
-          issuer, an OTC liquidity desk, and correspondent partners, as of{" "}
-          {AS_OF} CT.
+          Crypto and fiat settlement across banks, partners, and on/off-ramps.
+          As of {AS_OF} CT.
         </p>
       </header>
 
@@ -38,8 +37,8 @@ export default function DashboardPage() {
       />
 
       <footer className="mt-2 border-t border-border-primary pt-4 text-xs text-text-tertiary">
-        Portfolio demo built for the Bastion Payment Operations Associate
-        application. All data is mocked — no real accounts, partners, or
+        Portfolio demo for the Bastion Payment Operations Associate
+        application. All data is mocked. No real accounts, partners, or
         transactions.
       </footer>
     </main>

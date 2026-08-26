@@ -20,9 +20,8 @@ export function TreasurySnapshot({
           Treasury snapshot
         </h2>
         <p className="text-xs text-text-secondary">
-          Closing balances vs. target, by venue. Each balance is the
-          account&apos;s opening balance plus today&apos;s net settlement
-          movement — the same figure the Cash movement tab reconciles to.
+          Closing balances against target, by account. Each one is the
+          opening balance plus today&apos;s net movement.
         </p>
       </div>
       <div className="grid gap-px bg-border-primary sm:grid-cols-3">

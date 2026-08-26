@@ -8,9 +8,9 @@ import {
 // One source of truth for the day.
 //
 // Treasury accounts carry only an OPENING balance and the counterparties whose
-// settlement flows through them. Everything else — today's money in, money
+// settlement flows through them. Everything else, today's money in, money
 // out, net movement, closing balance, funding status, and any prefunding
-// requirement — is derived here from the same reconciliation rows the recon
+// requirement, is derived here from the same reconciliation rows the recon
 // table renders. The treasury snapshot and the cash-movement view are two
 // presentations of one calculation rather than two hand-written sets of
 // numbers that can drift apart.

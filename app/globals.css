@@ -2,7 +2,7 @@
 
 /* ---------------------------------------------------------------------- */
 /* Design tokens                                                          */
-/* A restrained, light "fintech ops" palette — surfaces/text/border/badge */
+/* A restrained, light "fintech ops" palette: surfaces/text/border/badge */
 /* role tokens, in the spirit of Stripe/Brex/Ramp internal tooling.       */
 /* Deliberately NOT SolanaFeed's dark/gold crypto theme.                  */
 /* ---------------------------------------------------------------------- */
@@ -32,7 +32,7 @@
   --brand-accent: #1d4ed8;
   --brand-accent-hover: #1e40af;
 
-  /* Role tokens — status badges, hop indicators, alerts */
+  /* Role tokens: status badges, hop indicators, alerts */
   --bg-success: #ecfdf3;
   --text-success: #05713b;
   --border-success: #b7ecd0;
@@ -100,7 +100,7 @@
   /* System stack on purpose: no webfont request, no layout shift, and it
      renders natively on every platform. An earlier version named Inter and
      IBM Plex Mono here without ever loading them, so the design silently fell
-     back anyway — this is the same result, stated honestly. Swap in
+     back anyway. Same result, stated honestly. Swap in
      next/font/google if a branded face is wanted later. */
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -110,7 +110,7 @@
 
 /* Default border colour. This MUST live in @layer base: Tailwind emits its
    utilities inside @layer utilities, and unlayered declarations beat layered
-   ones regardless of specificity — so an unlayered `*` rule here silently
+   ones regardless of specificity, so an unlayered `*` rule here silently
    overrides every border-* colour utility in the app (active tab indicator,
    badge tones, focus rings included). */
 @layer base {

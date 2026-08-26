@@ -35,7 +35,7 @@ covered separately.
 
 | Reason | Likely cause | First response |
 |---|---|---|
-| Amount mismatch | Correspondent/intermediary fee deducted in transit, partial fill, or one instruction in a bulk file returned separately. FX variance only where the two sides are in different currencies — never on a EUR-vs-EUR SEPA leg | Confirm fee schedule or fill status with partner; if unexplained after one cycle, escalate |
+| Amount mismatch | Correspondent/intermediary fee deducted in transit, partial fill, or one instruction in a bulk file returned separately. FX variance only where the two sides are in different currencies, never on a EUR-vs-EUR SEPA leg | Confirm fee schedule or fill status with partner; if unexplained after one cycle, escalate |
 | Missing on partner ledger | Payment in flight, not yet settled on partner's side | Recheck next cutoff; if still missing after 2 cycles, contact partner ops |
 | On internal ledger, not yet visible on partner API | Webhook/API lag, or the counterparty's indexer/ledger hasn't caught up | Poll partner status endpoint; escalate if lag exceeds partner's stated SLA |
 | Duplicate or unexpected entry | Retry logic double-submitted, or partner-side duplicate | Freeze the entry, do not resubmit, escalate to eng + partner before touching balances |
@@ -44,9 +44,9 @@ covered separately.
 
 Exceptions are payments that didn't complete cleanly: **Stalled**,
 **Return**, **Reject**, or **Failed conversion**. Every exception gets
-logged with a diagnostic trail — the hop-by-hop path the payment took
+logged with a diagnostic trail: the hop-by-hop path the payment took
 across Bastion's ledger, the partner's API, the settlement network, and
-the receiving bank — so it's clear which system the failure sits in
+the receiving bank, so it's clear which system the failure sits in
 before anyone starts investigating.
 
 1. **New.** Exception is logged automatically when a payment fails to
@@ -61,7 +61,7 @@ before anyone starts investigating.
    compliance review, or an engineering fix (e.g., a network-level
    failure, a value above the operator's authority to resolve alone, or
    no response from the partner within SLA).
-4. **Resolved.** Root cause identified and a next action taken —
+4. **Resolved.** Root cause identified and a next action taken:
    corrected and resubmitted, refunded, written off with sign-off, or
    confirmed as a false positive (payment actually settled, monitoring
    lagged).
@@ -74,7 +74,7 @@ fast the rail is.
 | Type | First response | Escalate if unresolved after |
 |---|---|---|
 | Return / Reject | 30 min | 4 hours |
-| Failed conversion | 15 min | 1 hour (higher priority — usually blocks downstream settlement) |
+| Failed conversion | 15 min | 1 hour (higher priority, usually blocks downstream settlement) |
 | Recon break (amount mismatch) | 1 hour | 8 hours |
 
 A **stall** is different: the target has to follow the rail, because "late"
@@ -109,12 +109,12 @@ Operator → Payment Operations Lead → (Engineering, for system-level
 failures) / (Partner ops desk, for counterparty-side issues) /
 (Compliance, for anything touching sanctions, fraud, or account status).
 Escalations should include the exception ID, the diagnostic trail, and
-what's already been ruled out — not just "this is stuck."
+what's already been ruled out, not just "this is stuck."
 
 ## 6. Continuous improvement
 
 Recurring break reasons and exception types are reviewed periodically to
-identify automation opportunities — auto-resolving known-benign timing
+identify automation opportunities: auto-resolving known-benign timing
 lags, auto-classifying exceptions by trail pattern, and trail-pattern
 root-cause suggestions to cut first-response time on Investigating-stage
 exceptions. Those suggestions are rules-based today, reading the diagnostic

@@ -7,7 +7,7 @@ import {
 
 // KPIs the strip displays. Anything that CAN be computed from the rows on
 // screen IS computed from them, so the headline numbers can't contradict the
-// tables underneath — including after an operator promotes a break to an
+// tables underneath, including after an operator promotes a break to an
 // exception, which moves the exception count in real time.
 //
 // Settlement latency and throughput stay fixed inputs: in a real system
@@ -31,7 +31,7 @@ export function deriveKpis(
   const breaks = rows.filter((r) => r.status === "break");
 
   // The figure at stake on a break is the unreconciled DELTA between
-  // Bastion's ledger and the partner's, not the payment's full value — a
+  // Bastion's ledger and the partner's, not the payment's full value. A
   // $1.2M wire that's $35 short puts $35 in question, not $1.2M. Absolute
   // value per row, so two breaks in opposite directions can't cancel each
   // other out and hide themselves. Mixed currencies are expressed in USD at

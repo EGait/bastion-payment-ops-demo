@@ -26,7 +26,7 @@ const TABS: Array<{ id: DashboardTab; label: string }> = [
 
 // A break where the partner reports nothing at all is a stalled payment. A
 // break where both sides posted but disagree on the amount is a different
-// animal — nothing is stuck, the books just don't agree — so it gets its own
+// animal, nothing is stuck and the books just don't agree, so it gets its own
 // type and its own (longer) SLA clock.
 function exceptionTypeForBreak(row: ReconRow): ExceptionType {
   return row.partnerAmount === 0 ? "Stalled" : "Recon break";
@@ -51,7 +51,7 @@ export function Dashboard({
   const [tab, setTab] = useState<DashboardTab>("overview");
 
   // Filters live here rather than inside the tables, so switching tabs doesn't
-  // silently reset an operator's view — and so focusing an exception can clear
+  // silently reset an operator's view, and so focusing an exception can clear
   // a filter that would otherwise hide it.
   const [queueFilter, setQueueFilter] = useState<QueueFilter>("All");
   const [breaksOnly, setBreaksOnly] = useState(false);
@@ -60,7 +60,7 @@ export function Dashboard({
   const pendingScrollId = useRef<string | null>(null);
 
   // Everything downstream reads from the same rows, so the KPI strip, the
-  // treasury snapshot, and the cash-movement view stay in agreement — even
+  // treasury snapshot, and the cash-movement view stay in agreement, even
   // after an operator promotes a break to an exception.
   const positions = useMemo(
     () => buildPositions(treasuryAccounts, reconRows),
@@ -91,7 +91,7 @@ export function Dashboard({
   function promotedException(row: ReconRow): ExceptionItem {
     promoteCounter.current += 1;
     // The amount in question is the unreconciled DELTA, not the payment's
-    // full value — the same rule the "unreconciled variance" KPI uses. When
+    // full value. Same rule the "unreconciled variance" KPI uses. When
     // the partner reports nothing, the delta is the whole payment anyway.
     const variance = Math.abs(row.internalAmount - row.partnerAmount);
     return {
@@ -140,7 +140,7 @@ export function Dashboard({
   function focusException(exceptionId: string) {
     setTab("overview");
     // Without this, jumping to an exception that the current filter hides is
-    // a silent no-op — the row simply isn't rendered.
+    // a silent no-op, since the row simply isn't rendered.
     setQueueFilter("All");
     setExpandedId(exceptionId);
     pendingScrollId.current = exceptionId;

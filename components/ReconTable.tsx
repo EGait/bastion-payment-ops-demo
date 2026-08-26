@@ -53,9 +53,7 @@ export function ReconTable({
             Daily reconciliation
           </h2>
           <p className="text-xs text-text-secondary">
-            Internal ledger entries vs. partner-reported settlement, leg by
-            leg — banks, a stablecoin issuer, an OTC liquidity desk, and
-            correspondent partners.
+            Our ledger against what each partner reported, leg by leg.
           </p>
         </div>
         <label className="flex items-center gap-2 text-xs font-medium text-text-secondary select-none">
@@ -175,7 +173,7 @@ export function ReconTable({
                   colSpan={8}
                   className="px-4 py-8 text-center text-sm text-text-tertiary"
                 >
-                  No breaks — everything reconciled.
+                  No breaks. Everything reconciled.
                 </td>
               </tr>
             )}
@@ -193,7 +191,7 @@ export function ReconTable({
                       scope="row"
                       colSpan={3}
                       className="px-4 py-2 text-left font-semibold text-text-tertiary"
-                      title="Gross settlement value reconciled today, per currency — not a balance."
+                      title="Gross settlement value reconciled today, per currency. Not a balance."
                     >
                       Total reconciled
                     </th>
